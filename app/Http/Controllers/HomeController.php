@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Foto;
+use App\Models\User;
 
 class HomeController extends Controller
 {
@@ -24,9 +24,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $fotos = Foto::with('User')
-            ->with('Comentario.User')
-            ->get();
-        return view('home', compact('fotos'));
+        $users = User::All();
+        return view('home', compact('users'));
     }
+
 }

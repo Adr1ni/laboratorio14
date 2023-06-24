@@ -7,17 +7,18 @@ use App\Models\Foto;
 use App\Models\Comentario;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
+use App\Models\User;
 
 
 class FotoController extends Controller
 {
-    //
     public function index()
     {
         $id = auth()->user()->id;
-        $fotos = Foto::where('user_id', $id)->get();
-        return view('fotos.fotos', compact('fotos'));
+        $users = User::find($id);
+        return view('fotos.fotos', compact('users'));
     }
+
 
     public function mostrarFoto(string $ruta)
     {
@@ -28,29 +29,38 @@ class FotoController extends Controller
     public function subirFoto(Request $request)
     {
         if ($request->hasFile('foto')) {
+
+
             $id = auth()->user()->id;
             $image      = $request->file('foto');
             $fileName   = time() . '.' . $image->getClientOriginalExtension();
+            $user = User::find($id);
+            $foto = $user->Fotos()->save(
+                new Foto(['descripcion' => $request->descripcion,
+                'estado'=>'1',
+                'ruta'=>$fileName
+                ])
+            );
+            
             Storage::disk('fotos')->put('/' . $fileName, file_get_contents($image));
-            $foto = new Foto;
-            $foto->user_id = $id;
-            $foto->descripcion = $request->descripcion;
-            $foto->estado = 1;
-            $foto->ruta = $fileName;
-            $foto->save();
+    
             return redirect('/fotos');
         }
     }
+
     public function eliminarFoto(Request $request)
     {
         if ($request->id_foto) {
-            $foto = Foto::find($request->id_foto);
-            $foto->delete();
+            $user = User::where('Fotos._id',$request->id_foto)
+            ->first();
+            Storage::disk('fotos')->delete($user->Fotos[0]->ruta);
+            $user->Fotos()->destroy($request->id_foto);
 
-            Storage::disk('fotos')->delete($foto->ruta);
+
             return redirect('/fotos');
         }
     }
+
     public function subirComentario(Request $request)
     {
         if ($request->comentario) {

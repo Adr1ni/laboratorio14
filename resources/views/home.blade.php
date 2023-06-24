@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+
 @section('content')
 <main>
     <style>
@@ -10,6 +11,7 @@
             -moz-user-select: none;
             user-select: none;
         }
+
 
         @media (min-width: 768px) {
             .bd-placeholder-img-lg {
@@ -22,7 +24,8 @@
     <div class="album py-5 bg-light">
         <div class="container">
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                @foreach($fotos as $foto)
+                @foreach($users as $user)
+                @foreach($user->Fotos as $foto)
                 <div class="col">
                     <div class="card shadow-sm">
                         <img height="200" src="/foto/{{$foto->ruta}}" alt="Imagen">
@@ -36,7 +39,7 @@
                                         </button>
                                     </p>
                                 </div>
-                                <small class="text-muted">{{$foto->User->name}}</small>
+                                <small class="text-muted">{{$user->name}}</small>
                             </div>
                             <div class="collapse" id="collapseExample{{$foto->id}}">
                                 @foreach($foto->comentario as $comentario)
@@ -61,15 +64,16 @@
                                         </div>
                                     </div>
 
+
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
                 @endforeach
+                @endforeach
             </div>
         </div>
     </div>
-
 </main>
 @endsection
